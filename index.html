@@ -4,12 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b4f6c">
-  <meta name="description" content="WebGIS Hệ thống Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long — khai thác 9 lớp dữ liệu thủy lợi từ kho dữ liệu hạ tầng Vĩnh Long, 321 đối tượng, truy vấn thuộc tính và popup chi tiết.">
-  <title>WebGIS Hệ thống Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long</title>
+  <meta name="description" content="WebGIS Thủy lợi Vĩnh Long — tích hợp snapshot 321 đối tượng thuộc 9 lớp thủy lợi và cơ sở dữ liệu nghiên cứu khu vực Bến Tre về công trình, thủy văn và xâm nhập mặn.">
+  <title>WebGIS Thủy lợi Vĩnh Long</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="assets/css/app-v3.css?v=3.0.0">
+  <link rel="stylesheet" href="assets/css/app-v3.css?v=4.0.0">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.0.0">
 </head>
 <body>
 <noscript>Ứng dụng cần JavaScript để hiển thị WebGIS.</noscript>
@@ -18,75 +19,112 @@
     <button id="menuButton" class="icon-btn mobile-only" type="button" aria-label="Mở danh mục">☰</button>
     <div class="brand">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 30c7-8 13-11 19-8 5 2 8 2 15-3v12c-7 5-12 5-17 2-6-3-10-1-17 6V30Z" fill="currentColor"/><path d="M13 10h22v9H13zM18 6h12v4H18z" fill="currentColor" opacity=".85"/></svg></span>
-      <div class="brand-copy"><strong>WEBGIS THỦY LỢI khu vực Trà Vinh, tỉnh Vĩnh Long</strong><span>321 đối tượng · 9 lớp nghiệp vụ · truy vấn thuộc tính</span></div>
+      <div class="brand-copy"><strong>WEBGIS THỦY LỢI VĨNH LONG</strong><span>Tổng hợp dữ liệu thủy lợi · khu vực Vĩnh Long · Bến Tre · Trà Vinh</span></div>
+      <span class="version-badge">v4.0.0</span>
     </div>
-    <label class="global-search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" autocomplete="off" placeholder="Tìm tên công trình, địa chỉ, xã/phường, năm, hiện trạng…"><button id="clearSearch" type="button" aria-label="Xóa tìm kiếm">×</button></label>
+    <label class="global-search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" autocomplete="off" placeholder="Tìm công trình, trạm, địa danh, hiện trạng, năm xây dựng…"><button id="clearSearch" type="button" aria-label="Xóa tìm kiếm">×</button></label>
     <div class="top-actions"><span id="dataStatus" class="status-pill loading">ĐANG NẠP</span><button id="locateButton" class="top-btn" type="button">⌖ <span>Vị trí</span></button><button id="fullscreenButton" class="top-btn desktop-only" type="button">⛶ <span>Toàn màn hình</span></button><button id="aboutButtonTop" class="top-btn" type="button">ⓘ <span>Nguồn</span></button></div>
   </header>
 
   <div class="dataset-bar">
-    <div class="dataset-copy"><b>Bộ lớp Thủy lợi từ kho dữ liệu hạ tầng Vĩnh Long</b><span>Snapshot ghim theo commit nguồn; thuộc tính được giữ nguyên, popup hiển thị đầy đủ các trường công khai.</span></div>
-    <div class="dataset-kpis" aria-label="Thống kê bộ lớp"><span><b>24</b> KTTV</span><span><b>3</b> trạm bơm</span><span><b>3</b> đập</span><span><b>53</b> cống</span><span><b>11</b> cấp nước</span><span><b>59</b> kênh</span><span><b>10</b> kè</span><span><b>121</b> đê</span><span><b>37</b> sạt lở</span></div>
+    <div class="dataset-copy"><b><strong>Snapshot hạ tầng:</strong> 321 đối tượng · 9 lớp nghiệp vụ</b><span>Giữ nguyên thuộc tính GeoJSON theo commit nguồn; song song với khối CSDL nghiên cứu Bến Tre 2020.</span></div>
+    <div class="dataset-kpis" aria-label="Thống kê 9 lớp snapshot"><span><b>24</b> KTTV</span><span><b>3</b> trạm bơm</span><span><b>3</b> đập</span><span><b>53</b> cống</span><span><b>11</b> cấp nước</span><span><b>59</b> kênh</span><span><b>10</b> kè</span><span><b>121</b> đê</span><span><b>37</b> sạt lở</span></div>
+  </div>
+
+  <div class="province-bar">
+    <div class="province-context"><b>Tỉnh Vĩnh Long mới</b><span>hình thành từ Vĩnh Long, Bến Tre và Trà Vinh; hệ thống tách rõ từng nguồn để không cộng gộp sai bản chất dữ liệu.</span></div>
+    <div class="area-pills" aria-label="Đi nhanh theo vùng dữ liệu"><button class="area-pill" data-area="all" type="button">Toàn bộ</button><button class="area-pill" data-area="snapshot" type="button">Snapshot 321</button><button class="area-pill" data-area="bentre" type="button">Bến Tre · nghiên cứu</button><button class="area-pill pending" data-area="travinh" type="button">Trà Vinh · chờ lớp riêng</button></div>
   </div>
 
   <div class="app-shell" id="appShell">
     <aside id="sidebar" class="sidebar" aria-label="Điều khiển bản đồ">
-      <nav class="nav-tabs"><button class="nav-tab active" data-panel="layersPanel" type="button">Lớp dữ liệu</button><button class="nav-tab" data-panel="resultsPanel" type="button">Kết quả</button><button class="nav-tab" data-panel="toolsPanel" type="button">Công cụ</button></nav>
+      <nav class="nav-tabs"><button class="nav-tab active" data-panel="layersPanel" type="button">Lớp</button><button class="nav-tab" data-panel="bentrePanel" type="button">Bến Tre</button><button class="nav-tab" data-panel="resultsPanel" type="button">Truy vấn</button><button class="nav-tab" data-panel="toolsPanel" type="button">Công cụ</button></nav>
 
       <section id="layersPanel" class="side-panel active">
         <div class="panel-heading"><span>Nền bản đồ</span><button id="fitAllButton" class="text-button" type="button">Toàn bộ dữ liệu</button></div>
         <div class="segmented"><button class="base-button active" data-base="osm" type="button">Đường phố</button><button class="base-button" data-base="satellite" type="button">Vệ tinh</button><button class="base-button" data-base="light" type="button">Sáng</button></div>
-        <div class="panel-heading section-gap"><span>9 lớp Thủy lợi</span><button id="toggleAllLayers" class="text-button" type="button">Ẩn tất cả</button></div>
+
+        <div class="panel-heading section-gap"><span>Snapshot hạ tầng · 9 lớp</span><button id="toggleAllLayers" class="text-button" type="button">Ẩn tất cả</button></div>
         <div id="layerList" class="layer-list" aria-live="polite"></div>
-        <div class="legend-note"><span class="source-dot"></span><b>Nguồn:</b> hatang.vinhlong.gov.vn qua kho <code>webgis-vinhlong/layer</code>.</div>
+        <div class="legend-note"><span class="source-dot"></span><b>Nguồn:</b> <code>webgis-vinhlong/layer</code> · nhóm <code>thuy_loi</code> · 321 đối tượng.</div>
+
+        <div class="source-section section-gap">
+          <div class="source-section-head"><span class="source-symbol"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 12a6 6 0 1 1-12 0c0-5 6-12 6-12Z"/><path d="M9 16c1 1 2 1.5 4 1"/></svg></span><div><b>Khu vực Bến Tre · nghiên cứu 2020</b><span>Lớp tham chiếu phục dựng và chuỗi mặn; tách biệt với 321 đối tượng snapshot.</span></div></div>
+          <div id="researchLayerList" class="source-section-body"></div>
+        </div>
+      </section>
+
+      <section id="bentrePanel" class="side-panel">
+        <div class="research-intro">
+          <h3>CSDL nghiên cứu thủy lợi Bến Tre</h3>
+          <p>Khối lượng CSDL được giữ đúng theo Bảng 2 của báo cáo nghiên cứu. Đây là thống kê số dòng/bản ghi trong CSDL nghiên cứu, <b>không phải</b> số feature của bộ snapshot 321 đối tượng.</p>
+          <div class="research-tags"><span class="research-tag">Báo cáo 2020</span><span class="research-tag">PostgreSQL/PostGIS</span><span class="research-tag warn">Hình học mẫu phục dựng</span></div>
+        </div>
+        <div class="panel-heading section-gap"><span>Khối lượng dữ liệu cốt lõi</span><span class="small-count">Bảng 2</span></div>
+        <div id="inventoryGrid" class="inventory-grid"></div>
+        <div class="consistency-note"><b>Hai hệ số liệu song song:</b> 321 là số đối tượng của 9 lớp GeoJSON snapshot; các số 148, 1.878, 1.452, 5.992… là số dòng trong CSDL nghiên cứu Bến Tre. Giao diện không cộng hai hệ này thành một “tổng công trình”.</div>
+
+        <div class="salinity-controls">
+          <div class="salinity-head"><b>Xâm nhập mặn lịch sử · 10 trạm</b><output id="salinityYearOutput">2016</output></div>
+          <input id="salinityYear" type="range" min="1997" max="2016" value="2016" step="1">
+          <div class="salinity-scale"></div><div class="salinity-labels"><span>&lt;4 g/L</span><span>4</span><span>16</span><span>24+</span></div>
+          <div class="hydro-summary"><div><b id="hydroAvailable">—</b><span>trạm có số liệu</span></div><div><b id="hydroOver4">—</b><span>trạm ≥4 g/L</span></div><div><b id="hydroMax">—</b><span>mặn lớn nhất</span></div></div>
+          <div id="salinityStationList" class="station-list"></div>
+        </div>
       </section>
 
       <section id="resultsPanel" class="side-panel">
-        <div class="panel-heading"><span>Truy vấn dữ liệu</span><span id="resultCount" class="small-count">0</span></div>
-        <p class="hint">Tìm kiếm không dấu trên tên công trình và toàn bộ trường thuộc tính. Chọn một kết quả để zoom tới đối tượng.</p>
-        <label class="field-label" for="layerFilter">Lọc theo lớp</label><select id="layerFilter"><option value="all">Tất cả 9 lớp</option></select>
+        <div class="panel-heading"><span>Truy vấn liên nguồn</span><span id="resultCount" class="small-count">0</span></div>
+        <p class="hint">Tìm kiếm không dấu trên 9 lớp snapshot và các điểm nghiên cứu Bến Tre. Kết quả luôn gắn nhãn nguồn để tránh nhầm lẫn.</p>
+        <label class="field-label" for="sourceFilter">Nguồn dữ liệu</label><select id="sourceFilter"><option value="all">Tất cả nguồn</option><option value="official">Snapshot hạ tầng 321</option><option value="research">Bến Tre · nghiên cứu 2020</option></select>
+        <label class="field-label" for="layerFilter">Lọc theo lớp</label><select id="layerFilter"><option value="all">Tất cả lớp có thể truy vấn</option></select>
         <div id="searchResults" class="search-results"><div class="empty-hint">Nhập từ khóa ở thanh tìm kiếm phía trên.</div></div>
       </section>
 
       <section id="toolsPanel" class="side-panel">
         <div class="panel-heading"><span>Công cụ bản đồ</span></div>
-        <div class="tool-grid"><button id="measureButton" class="wide-button" type="button">↔ Đo khoảng cách</button><button id="clearMeasureButton" class="wide-button" type="button">× Xóa phép đo</button><button id="copyCoordButton" class="wide-button" type="button">⌖ Sao chép tọa độ</button><button id="reloadDataButton" class="wide-button" type="button">↻ Nạp lại dữ liệu</button></div>
+        <div class="tool-grid"><button id="measureButton" class="wide-button" type="button">↔ Đo khoảng cách</button><button id="clearMeasureButton" class="wide-button" type="button">× Xóa phép đo</button><button id="copyCoordButton" class="wide-button" type="button">⌖ Sao chép tọa độ</button><button id="reloadDataButton" class="wide-button" type="button">↻ Nạp lại snapshot</button></div>
         <div id="measureResult" class="summary-box">Chọn hai hoặc nhiều điểm trên bản đồ để đo chiều dài.</div>
-        <div class="panel-heading section-gap"><span>Trạng thái dữ liệu</span></div><div id="loadReport" class="load-report"></div>
-        <div class="source-card section-gap"><b>Nguyên tắc hiển thị</b><p>Không tự suy diễn thuộc tính trống. Giá trị <em>null</em> hoặc chuỗi rỗng được hiển thị là “Chưa cập nhật”. Hình học và thuộc tính giữ nguyên theo snapshot nguồn.</p></div>
+        <div class="panel-heading section-gap"><span>Trạng thái nguồn</span></div><div id="loadReport" class="load-report"></div>
+        <div class="source-card section-gap"><b>Nguyên tắc nhất quán</b><p>Không suy diễn trường trống; không biến thống kê CSDL thành feature bản đồ; không gán hình học phục dựng thành dữ liệu pháp lý. Popup luôn hiển thị nguồn và chất lượng dữ liệu.</p></div>
       </section>
-      <footer class="side-footer"><span>WebGIS · v3.0.0</span><button id="aboutButton" class="text-button" type="button">Thông tin & nguồn</button></footer>
+      <footer class="side-footer"><span>WebGIS Thủy lợi Vĩnh Long · v4.0.0</span><button id="aboutButton" class="text-button" type="button">Thông tin & nguồn</button></footer>
     </aside>
 
     <main class="map-stage">
-      <div id="map" aria-label="Bản đồ hệ thống thủy lợi"></div>
+      <div id="map" aria-label="Bản đồ WebGIS Thủy lợi Vĩnh Long"></div>
       <div class="map-toolbar"><button id="zoomInButton" type="button" title="Phóng to">＋</button><button id="zoomOutButton" type="button" title="Thu nhỏ">−</button><button id="homeButton" type="button" title="Toàn bộ dữ liệu">⌂</button></div>
       <div id="coordinateReadout" class="coordinate-readout">—</div>
-      <div class="map-source-badge"><span class="source-dot"></span><span>Snapshot dữ liệu hạ tầng Vĩnh Long</span></div>
-      <section class="metric-strip" aria-label="Tổng quan dữ liệu"><div><b id="metricLoaded">0</b><span>đối tượng đã nạp</span></div><div><b id="metricVisible">0</b><span>đang hiển thị</span></div><div><b id="metricLayers">0/9</b><span>lớp hoạt động</span></div><div><b>EPSG:4326</b><span>hệ tọa độ</span></div></section>
+      <div class="map-source-badge multi-source"><span class="mini-source"><i class="mini-dot"></i>Snapshot 321</span><span class="mini-source"><i class="mini-dot research"></i>Bến Tre nghiên cứu</span></div>
+      <section class="metric-strip v4" aria-label="Tổng quan dữ liệu"><div><b id="metricOfficial">0</b><span>đối tượng snapshot</span></div><div><b id="metricResearch">40</b><span>điểm Bến Tre tham chiếu</span></div><div><b id="metricVisible">0</b><span>đang hiển thị</span></div><div><b id="metricLayers">0/12</b><span>lớp/overlay hoạt động</span></div></section>
     </main>
 
     <aside id="detailDrawer" class="detail-drawer" aria-label="Thông tin đối tượng">
       <div class="drawer-header"><div class="drawer-heading"><span id="detailIcon" class="detail-icon"></span><div><div id="detailEyebrow" class="eyebrow">THÔNG TIN ĐỐI TƯỢNG</div><h2 id="detailTitle">Chọn một đối tượng</h2></div></div><button id="closeDrawer" class="icon-btn" type="button" aria-label="Đóng">×</button></div>
-      <div id="detailBody" class="drawer-body"><div class="empty-state"><div>⌖</div><p>Nhấp vào ký hiệu hoặc tuyến trên bản đồ để xem toàn bộ thuộc tính.</p></div></div>
+      <div id="detailBody" class="drawer-body"><div class="empty-state"><div>⌖</div><p>Nhấp vào ký hiệu hoặc tuyến trên bản đồ để xem thuộc tính, nguồn dữ liệu và chất lượng hình học.</p></div></div>
       <div id="detailActions" class="drawer-actions" hidden><button id="zoomDetailButton" type="button">Zoom tới</button><button id="copyDetailButton" type="button">Sao chép thông tin</button></div>
     </aside>
   </div>
 </div>
 
 <dialog id="aboutDialog">
-  <div class="dialog-header"><div><div class="eyebrow">NGUỒN DỮ LIỆU & PHIÊN BẢN</div><h2>WebGIS Hệ thống Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long</h2></div><button class="icon-btn dialog-close" type="button">×</button></div>
+  <div class="dialog-header"><div><div class="eyebrow">NGUỒN DỮ LIỆU & MÔ HÌNH V4</div><h2>WebGIS Thủy lợi Vĩnh Long</h2></div><button class="icon-btn dialog-close" type="button">×</button></div>
   <div class="about-content">
-    <p>Phiên bản này khai thác trực tiếp 9 lớp Thủy lợi đã bốc tách trong kho <b>webgis-vinhlong/layer</b>, nguồn gốc từ cổng Cơ sở dữ liệu ngành Nông nghiệp và Môi trường – lĩnh vực Thủy lợi.</p>
+    <p><b>Phạm vi hành chính:</b> tỉnh Vĩnh Long mới được hình thành từ toàn bộ diện tích và dân số của ba tỉnh Vĩnh Long, Bến Tre và Trà Vinh theo sắp xếp đơn vị hành chính cấp tỉnh năm 2025. WebGIS tổ chức dữ liệu theo các vùng lịch sử nhưng không đổi tên địa danh gốc trong dataset.</p>
+    <div class="about-region-grid"><div class="about-region active"><b>Snapshot hạ tầng</b><span>321 đối tượng thuộc 9 lớp <code>thuy_loi</code>, ghim theo commit nguồn.</span></div><div class="about-region research"><b>Khu vực Bến Tre</b><span>Khối lượng CSDL nghiên cứu 2020, 10 trạm chuỗi mặn và 30 điểm công trình tham chiếu phục dựng.</span></div><div class="about-region"><b>Khu vực Trà Vinh</b><span>Khung tích hợp đã sẵn sàng; chưa tự tạo lớp chuyên đề khi chưa có snapshot tương đương trong nguồn hiện tại.</span></div></div>
+    <p><b>Snapshot 321:</b> nguồn <code>hatang.vinhlong.gov.vn/map-thuy-loi</code> qua kho <code>webgis-vinhlong/layer</code>, commit <code>a93ebf004b04f79d90a199d22a139dab7479895c</code>.</p>
     <div id="aboutDataset" class="about-grid"></div>
-    <p><b>Snapshot nguồn:</b> <code>a93ebf004b04f79d90a199d22a139dab7479895c</code>. Dữ liệu được nạp từ jsDelivr CDN theo đúng commit này để tránh thay đổi ngầm khi nhánh nguồn cập nhật.</p>
-    <p><b>Lưu ý phạm vi:</b> tên dự án giữ theo WebGIS Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long hiện hữu; bộ 321 đối tượng ở phiên bản này phản ánh chính xác lớp <em>thuy_loi</em> của kho dữ liệu hạ tầng Vĩnh Long tại snapshot nêu trên.</p>
+    <p><b>CSDL nghiên cứu Bến Tre:</b> các số liệu bên dưới là số dòng/bản ghi trong CSDL nghiên cứu, không phải số feature của snapshot 321.</p>
+    <div id="aboutResearch" class="about-grid"></div>
+    <p><b>Nguồn pháp lý phạm vi tỉnh mới:</b> Nghị quyết 202/2025/QH15 và Nghị quyết 1687/NQ-UBTVQH15. Chính quyền cấp xã mới hoạt động từ 01/07/2025.</p>
   </div>
 </dialog>
 
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="assets/js/layer-catalog.js?v=3.0.0"></script>
-<script src="assets/js/app-v3.js?v=3.0.0"></script>
-<script>if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){navigator.serviceWorker.register("./service-worker-v3.js").catch(()=>{});}</script>
+<script src="assets/js/layer-catalog.js?v=4.0.0"></script>
+<script src="assets/js/data.js?v=4.0.0"></script>
+<script src="assets/js/app-v4.js?v=4.0.0"></script>
+<script>if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){navigator.serviceWorker.register("./service-worker-v4.js").catch(()=>{});}</script>
 </body>
 </html>

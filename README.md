@@ -1,12 +1,22 @@
-# 🌊 WebGIS Hệ thống Thủy lợi Bến Tre
+# 🌊 WebGIS Thủy lợi Vĩnh Long
 
-WebGIS chuyên đề phục vụ tra cứu, trực quan hóa và truy vấn dữ liệu công trình thủy lợi trên nền bản đồ Web. Phiên bản **v3.0.0** tiếp tục kế thừa bản phục dựng từ nghiên cứu WebGIS thủy lợi Bến Tre, đồng thời tích hợp bộ lớp `thuy_loi` đã bốc tách từ kho dữ liệu [`webgis-vinhlong/layer`](https://github.com/webgis-vinhlong/layer), nguồn gốc từ Cơ sở dữ liệu ngành Nông nghiệp và Môi trường – lĩnh vực Thủy lợi của tỉnh Vĩnh Long.
+WebGIS chuyên đề phục vụ tra cứu, trực quan hóa và truy vấn dữ liệu thủy lợi của **tỉnh Vĩnh Long mới**. Phiên bản **v4.0.0** tổ chức lại hệ thống theo mô hình nhiều nguồn dữ liệu, trong đó dữ liệu bản đồ nghiệp vụ và khối lượng CSDL nghiên cứu được tách rõ để không cộng gộp sai bản chất.
 
 > Trang WebGIS: `https://webgis-vinhlong.github.io/thuyloi/`
 
-## ✨ WebGIS v3.0.0
+## Phạm vi hành chính
 
-Bản v3 chuyển trọng tâm từ dữ liệu minh họa sang **321 đối tượng thuộc 9 lớp nghiệp vụ thực tế**:
+Theo Nghị quyết số **202/2025/QH15**, toàn bộ diện tích tự nhiên và quy mô dân số của ba tỉnh **Bến Tre, Trà Vinh và Vĩnh Long** được sắp xếp thành tỉnh mới có tên là **tỉnh Vĩnh Long**. Nghị quyết **1687/NQ-UBTVQH15** tiếp tục sắp xếp các đơn vị hành chính cấp xã của tỉnh Vĩnh Long năm 2025.
+
+Vì vậy tên dự án được chuẩn hóa thành:
+
+> **WebGIS Thủy lợi Vĩnh Long**
+
+Hệ thống có thể mở rộng dữ liệu theo ba vùng lịch sử: **Vĩnh Long · Bến Tre · Trà Vinh**, nhưng luôn giữ nguyên địa danh và nguồn gốc của từng bộ dữ liệu.
+
+## 1. Snapshot hạ tầng: 321 đối tượng / 9 lớp
+
+Nguồn: [`webgis-vinhlong/layer`](https://github.com/webgis-vinhlong/layer), nhóm `thuy_loi`, bốc tách từ `https://hatang.vinhlong.gov.vn/map-thuy-loi`.
 
 | Lớp | Layer ID | Hình học | Số đối tượng |
 |---|---:|---|---:|
@@ -21,111 +31,144 @@ Bản v3 chuyển trọng tâm từ dữ liệu minh họa sang **321 đối tư
 | ⚠️ Vị trí sạt lở | 247 | LineString | **37** |
 | | | **Tổng** | **321** |
 
-## 🔎 Chức năng chính
-
-- Hiển thị đầy đủ 9 lớp Thủy lợi với **màu và SVG ký hiệu riêng** cho từng nhóm.
-- Bật/tắt từng lớp hoặc toàn bộ lớp từ sidebar.
-- Nền OpenStreetMap, Esri World Imagery và CARTO Light.
-- **Truy vấn không dấu** trên tên công trình và toàn bộ trường thuộc tính công khai.
-- Lọc kết quả theo lớp; chọn kết quả để zoom tới điểm/tuyến.
-- Popup kiểu nghiệp vụ: tên đối tượng, nhóm lớp và **toàn bộ thuộc tính nguồn**.
-- Drawer chi tiết chứa nguồn, Layer ID, FID, thuộc tính, loại hình học, tọa độ và chiều dài hình học tính từ geometry.
-- Giá trị `null` hoặc chuỗi rỗng được ghi rõ **“Chưa cập nhật”**, không tự suy diễn dữ liệu.
-- Tooltip tên đối tượng khi rê chuột trên điểm hoặc tuyến.
-- GPS, toàn màn hình, sao chép tọa độ và đo khoảng cách nhiều điểm.
-- Responsive cho desktop, tablet và mobile.
-- PWA/service worker v3 có runtime cache cho tài nguyên bản đồ và snapshot GeoJSON.
-
-## 🗃️ Nguồn dữ liệu
-
-Nguồn dữ liệu nghiệp vụ:
-
-- Portal: `https://hatang.vinhlong.gov.vn/map-thuy-loi`
-- Kho bốc tách: `https://github.com/webgis-vinhlong/layer`
-- Nhóm dữ liệu: `thuy_loi`
-- CRS: `EPSG:4326`
-- Snapshot nguồn được ghim ở commit:
+Snapshot được ghim ở commit:
 
 ```text
 a93ebf004b04f79d90a199d22a139dab7479895c
 ```
 
-WebGIS tải các GeoJSON qua jsDelivr **theo đúng commit** này, thay vì tải theo nhánh `main`, nhằm tránh thay đổi dữ liệu ngầm khi kho nguồn tiếp tục cập nhật.
+WebGIS tải GeoJSON theo đúng commit này để tránh thay đổi ngầm khi kho `layer` cập nhật.
 
-Chi tiết mapping lớp và nguyên tắc dữ liệu: [`docs/OFFICIAL-LAYERS.md`](docs/OFFICIAL-LAYERS.md).
+### Nguyên tắc
 
-## 🧾 Ví dụ thuộc tính
+- Giữ nguyên thuộc tính công khai theo từng feature.
+- Không tự bổ sung giá trị `null`/rỗng; giao diện hiển thị **“Chưa cập nhật”**.
+- Popup sinh động theo schema thực tế của từng lớp.
+- Hình học Point/LineString giữ nguyên theo snapshot nguồn.
+- Không tự đổi tên địa danh gốc theo vùng lịch sử nếu chưa có bảng ánh xạ được kiểm chứng.
 
-Các schema được giữ nguyên theo từng lớp. Ví dụ:
+## 2. Khu vực Bến Tre: CSDL nghiên cứu 2020
 
-- **Trạm khí tượng thủy văn:** Tên trạm, Loại trạm, Vị trí Km, Vận hành, Năm xây dựng, Ghi chú.
-- **Trạm bơm:** Tên trạm, Vị trí, Số máy bơm, Công suất thiết kế/thực tế, Diện tích phục vụ, hiện trạng.
-- **Cống:** Tên cống, Địa chỉ, Chiều dài, Chiều rộng dẫn nước, Kết cấu, Diện tích phục vụ, cao độ, năm xây dựng, tình trạng.
-- **Kênh/Kè/Đê:** tên tuyến, địa chỉ, chiều dài, chiều rộng/kết cấu/phân cấp, năm xây dựng, tình trạng, ghi chú.
-- **Sạt lở:** địa danh, tuyến sông/rạch, kích thước, diện tích, năm sạt lở, mức độ, điểm đầu/điểm cuối và ghi chú.
+Dữ liệu nghiên cứu được khôi phục từ báo cáo **“Xây dựng ứng dụng hỗ trợ quản lý và khai thác công trình thủy lợi tỉnh Bến Tre ứng phó với biến đổi khí hậu”**.
 
-Popup không cố định một schema chung mà sinh bảng thuộc tính theo chính dữ liệu của từng feature, vì vậy các trường của nguồn không bị mất khi hiển thị.
+Khối lượng CSDL cốt lõi theo **Bảng 2**:
 
-## 🏗️ Kiến trúc
+| Dữ liệu | Số dòng / bản ghi |
+|---|---:|
+| Cống cố định | **148** |
+| Trạm bơm | **2** |
+| Kênh cấp 1 | **65** |
+| Kênh cấp 2, 3 | **1.452** |
+| Đê bao | **196** |
+| Đập | **14** |
+| Cống tạm | **1.878** |
+| Trạm đo thủy văn | **31** |
+| Mực nước đỉnh triều theo ngày | **4.605** |
+| Độ mặn cao nhất theo tháng | **987** |
+| Độ mặn cao nhất theo ngày | **5.992** |
+
+Ngoài ra repository giữ:
+
+- chuỗi độ mặn cực đại của **10 trạm**, giai đoạn **1997–2016**;
+- **30 điểm công trình** đại diện phục dựng để minh họa giao diện;
+- ranh khu vực nghiên cứu dạng khái quát phục dựng.
+
+### Cảnh báo nhất quán dữ liệu
+
+Các con số **148, 1.878, 1.452, 5.992...** là số dòng/bản ghi của CSDL nghiên cứu Bến Tre. Chúng **không phải** số đối tượng GeoJSON của bộ snapshot 321.
+
+Do đó v4 hiển thị hai hệ số liệu riêng biệt:
 
 ```text
-GitHub Pages / Browser
-        │
-        ├── Leaflet 1.9.4
-        ├── app-v3.js
-        ├── layer-catalog.js
-        │
-        ├── OSM / Esri / CARTO basemap
-        │
-        └── jsDelivr CDN
-              │
-              └── webgis-vinhlong/layer@<pinned-commit>/data/geojson/*.geojson
+Snapshot hạ tầng: 321 feature / 9 lớp
+                ≠
+CSDL nghiên cứu Bến Tre: số dòng theo Bảng 2
 ```
 
-Kiến trúc sản xuất dài hạn vẫn có thể nâng cấp sang:
+Hệ thống không cộng hai nhóm này thành một “tổng số công trình”.
+
+## 3. Khu vực Trà Vinh
+
+Kiến trúc v4 đã chuẩn bị vùng tích hợp riêng cho dữ liệu Trà Vinh. Nếu chưa có snapshot GeoJSON/PostGIS tương đương trong nguồn hiện tại, giao diện chỉ hiển thị trạng thái **chờ lớp riêng** và không tự sinh hoặc gán dữ liệu từ vùng khác.
+
+## Chức năng WebGIS v4.0.0
+
+- Tên dự án thống nhất: **WebGIS Thủy lợi Vĩnh Long**.
+- Hiển thị 9 lớp snapshot với ký hiệu SVG và màu riêng.
+- Bật/tắt độc lập các overlay nghiên cứu Bến Tre.
+- Popup chi tiết toàn bộ trường thuộc tính của snapshot 321.
+- Drawer chi tiết có nguồn, Layer ID, FID, hình học và tọa độ.
+- Truy vấn không dấu liên nguồn; kết quả luôn có nhãn **Snapshot 321** hoặc **Bến Tre 2020**.
+- Bảng khối lượng CSDL nghiên cứu Bến Tre đúng Bảng 2.
+- Thanh thời gian xâm nhập mặn 1997–2016 cho 10 trạm nghiên cứu.
+- Chỉ báo số trạm có dữ liệu, số trạm ≥4 g/L và giá trị lớn nhất theo năm.
+- Sparkline chuỗi mặn trong popup/drawer trạm.
+- OpenStreetMap, Esri World Imagery và CARTO Light.
+- GPS, đo khoảng cách, sao chép tọa độ, toàn màn hình.
+- Responsive desktop/tablet/mobile.
+- PWA/service worker v4.
+
+## Kiến trúc dữ liệu
 
 ```text
-Leaflet / Browser → HTTPS API + GeoServer → PostgreSQL/PostGIS + GeoTIFF
+WebGIS Thủy lợi Vĩnh Long
+│
+├── Nguồn A · Snapshot hạ tầng 321
+│   └── jsDelivr → webgis-vinhlong/layer@<pinned-commit>/data/geojson/*.geojson
+│
+├── Nguồn B · Nghiên cứu Bến Tre 2020
+│   ├── Khối lượng CSDL Bảng 2
+│   ├── Chuỗi mặn 10 trạm 1997–2016
+│   └── Hình học tham chiếu phục dựng
+│
+└── Nguồn C · Trà Vinh
+    └── vùng mở rộng, chỉ nạp khi có dataset được kiểm chứng
 ```
 
-## 📁 Cấu trúc liên quan v3
+Kiến trúc sản xuất dài hạn:
+
+```text
+Leaflet / Browser
+      ↓
+HTTPS API + GeoServer
+      ↓
+PostgreSQL/PostGIS + GeoTIFF + hồ sơ kỹ thuật
+```
+
+## Cấu trúc v4
 
 ```text
 thuyloi/
 ├── index.html
 ├── assets/
 │   ├── css/
-│   │   └── app-v3.css
+│   │   ├── app-v3.css
+│   │   └── app-v4.css
 │   └── js/
 │       ├── layer-catalog.js
-│       └── app-v3.js
+│       ├── data.js
+│       └── app-v4.js
 ├── docs/
-│   └── OFFICIAL-LAYERS.md
-├── service-worker-v3.js
-└── manifest.webmanifest
+│   ├── OFFICIAL-LAYERS.md
+│   └── V4-DATA-MODEL.md
+├── manifest.webmanifest
+└── service-worker-v4.js
 ```
 
-Các file phục dựng v2 vẫn được giữ lại trong repository để bảo toàn lịch sử phát triển và dữ liệu nghiên cứu cũ, nhưng trang chính v3 không còn phụ thuộc vào các điểm công trình minh họa đó.
-
-## ▶️ Chạy cục bộ
-
-Không mở trực tiếp bằng `file://` nếu muốn kiểm thử đầy đủ fetch/PWA. Chạy một HTTP server:
+## Chạy cục bộ
 
 ```bash
 python -m http.server 8080
 ```
 
-Sau đó mở:
+Mở `http://localhost:8080/`.
 
-```text
-http://localhost:8080/
-```
+## Nguồn pháp lý / hành chính
 
-## ⚖️ Lưu ý sử dụng dữ liệu
+- Nghị quyết 202/2025/QH15 về sắp xếp đơn vị hành chính cấp tỉnh.
+- Nghị quyết 1687/NQ-UBTVQH15 về sắp xếp các đơn vị hành chính cấp xã của tỉnh Vĩnh Long năm 2025.
 
-WebGIS này là lớp khai thác/trực quan hóa từ snapshot dữ liệu công khai. Dữ liệu trống không được tự bổ sung; việc xác nhận pháp lý, hiện trạng công trình, thiết kế kỹ thuật hoặc điều hành thủy lợi phải đối chiếu với cơ quan quản lý và hệ thống nguồn.
-
-## 👤 Phát triển
+## Phát triển
 
 **Long Ngo / webgis-vinhlong**  
 Mã nguồn mở phục vụ nghiên cứu, WebGIS và dữ liệu không gian.
