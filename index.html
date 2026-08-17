@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f3d68">
+  <meta name="description" content="WebGIS Hệ thống Thủy lợi Bến Tre — phục dựng từ nghiên cứu năm 2020, dữ liệu công trình, thủy văn và xâm nhập mặn.">
+  <title>WebGIS Hệ thống Thủy lợi Bến Tre</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<noscript>Ứng dụng cần JavaScript để hiển thị WebGIS.</noscript>
+<div id="app">
+  <header class="topbar">
+    <button id="menuButton" class="icon-btn mobile-only" type="button" aria-label="Mở danh mục">☰</button>
+    <div class="brand" aria-label="WebGIS Thủy lợi Bến Tre">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 29c7-8 13-11 19-8 4 2 7 2 13-2v12c-6 4-10 4-15 1-6-3-10-1-17 6V29Z" fill="currentColor" opacity=".95"/><path d="M12 12h24v8H12zM18 8h12v4H18z" fill="currentColor"/></svg></span>
+      <div class="brand-copy"><strong>THỦY LỢI BẾN TRE</strong><span>WebGIS công trình · thủy văn · xâm nhập mặn</span></div>
+    </div>
+    <label class="search-wrap" aria-label="Tìm kiếm toàn hệ thống"><span class="search-icon" aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Tìm Ba Lai, Vàm Đồn, trạm, huyện, mã công trình…" autocomplete="off"><button id="clearSearch" type="button" aria-label="Xóa tìm kiếm">×</button></label>
+    <div class="top-actions"><span id="offlineBadge" class="status-pill">ONLINE</span><button id="locateButton" class="top-btn" type="button">⌖ <span>Vị trí</span></button><button id="fullscreenButton" class="top-btn desktop-only" type="button">⛶ <span>Toàn màn hình</span></button><button id="aboutButtonTop" class="top-btn" type="button">ⓘ <span>Thông tin</span></button></div>
+  </header>
+
+  <div class="research-bar"><div class="research-note"><b>Dữ liệu nền nghiên cứu 2020</b><span>Số liệu lịch sử được giữ nguyên theo báo cáo; vị trí mẫu phục dựng được gắn nhãn riêng.</span></div><div class="quick-stats" aria-label="Khối lượng dữ liệu nghiên cứu"><span><b>148</b> cống cố định</span><span><b>1.878</b> cống tạm</span><span><b>31</b> trạm thủy văn</span><span><b>5.992</b> bản ghi mặn/ngày</span></div></div>
+
+  <div class="app-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Điều khiển WebGIS">
+      <nav class="nav-tabs" aria-label="Nhóm chức năng"><button class="nav-tab active" data-panel="layersPanel">Bản đồ</button><button class="nav-tab" data-panel="analysisPanel">Thủy văn</button><button class="nav-tab" data-panel="dataPanel">Dữ liệu</button></nav>
+
+      <section id="layersPanel" class="side-panel active">
+        <div class="panel-heading"><span>Nền bản đồ</span><button class="text-button" id="resetViewButton" type="button">Toàn tỉnh</button></div>
+        <div class="segmented" role="group" aria-label="Chọn nền bản đồ"><button class="base-button" data-base="offline" type="button">Trắng</button><button class="base-button active" data-base="osm" type="button">OSM</button><button class="base-button" data-base="satellite" type="button">Vệ tinh</button></div>
+        <p class="hint">Nền OSM/ảnh vệ tinh cần Internet. Lớp nghiệp vụ và chuỗi nghiên cứu chạy trực tiếp trên trình duyệt.</p>
+        <div class="panel-heading section-gap"><span>Lớp dữ liệu</span><button id="toggleAllLayers" class="text-button" type="button">Ẩn tất cả</button></div><div id="layerList" class="layer-list"></div>
+        <div class="panel-heading section-gap"><span>Lọc công trình</span><span id="visibleCount" class="small-count">0</span></div>
+        <label class="field-label" for="districtFilter">Huyện / thành phố</label><select id="districtFilter"><option value="all">Tất cả địa bàn</option></select>
+        <label class="field-label" for="statusFilter">Trạng thái</label><select id="statusFilter"><option value="all">Tất cả trạng thái</option><option>Đang vận hành</option><option>Theo dõi</option><option>Bảo trì</option></select>
+        <div id="searchResults" class="search-results" aria-live="polite"></div>
+        <div class="source-card section-gap"><b>Phân biệt nguồn dữ liệu</b><p><span class="quality-dot research"></span> Số liệu nghiên cứu: thống kê/chuỗi được trích từ báo cáo.</p><p><span class="quality-dot reconstructed"></span> Hình học/điểm mẫu: phục dựng để minh họa giao diện, không dùng cho vận hành.</p></div>
+      </section>
+
+      <section id="analysisPanel" class="side-panel">
+        <div class="panel-heading"><span>Xâm nhập mặn lịch sử</span><span class="method-tag">IDW minh họa</span></div>
+        <p class="hint">Chuỗi cực đại 10 trạm, giai đoạn 1997–2016. Bề mặt IDW chỉ là trực quan hóa từ các điểm trạm phục dựng, không thay thế bản đồ nội suy nghiệp vụ.</p>
+        <label class="field-label" for="yearRange">Năm quan sát <output id="yearOutput">2016</output></label><input id="yearRange" type="range" min="1997" max="2016" value="2016" step="1"><div class="legend-gradient"><span>0 g/L</span><span>4</span><span>16</span><span>32 g/L</span></div>
+        <div class="hydro-kpis" aria-label="Tóm tắt năm đang chọn"><div><b id="hydroAvailable">—</b><span>trạm có số liệu</span></div><div><b id="hydroOver4">—</b><span>trạm ≥ 4 g/L</span></div><div><b id="hydroMax">—</b><span>mặn lớn nhất</span></div></div>
+        <label class="field-label section-gap" for="stationSelect">Trạm biểu đồ</label><select id="stationSelect"></select><div class="chart-wrap"><canvas id="salinityChart" width="560" height="270" role="img" aria-label="Biểu đồ độ mặn cực đại theo năm"></canvas></div><div id="chartSummary" class="summary-box"></div>
+        <div class="panel-heading section-gap"><span>Công cụ đo</span></div><button id="measureButton" class="wide-button" type="button">Đo khoảng cách</button><div id="measureResult" class="summary-box muted">Chọn hai điểm trên bản đồ.</div>
+      </section>
+
+      <section id="dataPanel" class="side-panel">
+        <div class="panel-heading"><span>Dữ liệu hiện trường cục bộ</span><span class="method-tag safe">LOCAL</span></div><p class="hint">Bản ghi thêm/sửa chỉ lưu trong trình duyệt hiện tại. Không gửi dữ liệu đến API cũ.</p>
+        <button id="addFacilityButton" class="wide-button primary" type="button">＋ Thêm công trình / điểm hiện trường</button>
+        <div class="button-grid"><button id="importButton" class="wide-button" type="button">Nhập GeoJSON / CSV</button><button id="exportGeojsonButton" class="wide-button" type="button">Xuất GeoJSON</button><button id="exportCsvButton" class="wide-button" type="button">Xuất CSV</button><button id="backupButton" class="wide-button" type="button">Sao lưu cục bộ</button></div><input id="importFile" type="file" accept=".json,.geojson,.csv" hidden>
+        <div class="panel-heading section-gap"><span>Khối lượng CSDL theo báo cáo</span><span class="small-count">Bảng 2</span></div><div id="inventoryTable" class="inventory-table"></div>
+        <div class="architecture-card section-gap"><b>Kiến trúc triển khai</b><p><strong>GitHub Pages:</strong> tầng trình bày + snapshot dữ liệu nghiên cứu.</p><p><strong>Sản xuất:</strong> Leaflet → API/GeoServer → PostgreSQL/PostGIS/GeoTIFF.</p></div><button id="resetLocalButton" class="wide-button danger section-gap" type="button">Xóa dữ liệu cục bộ</button>
+      </section>
+      <footer class="side-footer"><span>WebGIS phục dựng · 2026</span><button id="aboutButton" class="text-button" type="button">Nguồn & giới hạn</button></footer>
+    </aside>
+
+    <main class="map-stage"><div id="map" aria-label="Bản đồ hệ thống thủy lợi tỉnh Bến Tre"></div><div class="map-toolbar" aria-label="Công cụ bản đồ"><button id="zoomInButton" title="Phóng to" type="button">＋</button><button id="zoomOutButton" title="Thu nhỏ" type="button">−</button><button id="fitButton" title="Toàn tỉnh" type="button">⌂</button></div><div class="map-badge"><span class="quality-dot reconstructed"></span> Hình học mẫu phục dựng</div><div id="coordinateReadout" class="coordinate-readout">10.147000, 106.437000</div><section class="metric-strip" aria-label="Số liệu tổng quan"><div><span class="metric-value" id="metricFacilities">0</span><span class="metric-label">điểm đang hiển thị</span></div><div><span class="metric-value">10</span><span class="metric-label">trạm chuỗi 1997–2016</span></div><div><span class="metric-value">148</span><span class="metric-label">cống cố định đến 2019</span></div><div><span class="metric-value">5.992</span><span class="metric-label">mặn cao nhất/ngày</span></div></section></main>
+
+    <aside id="detailDrawer" class="detail-drawer" aria-label="Thông tin đối tượng"><div class="drawer-header"><div><div id="detailEyebrow" class="eyebrow">THÔNG TIN</div><h2 id="detailTitle">Chọn một đối tượng trên bản đồ</h2></div><button id="closeDrawer" class="icon-btn" type="button" aria-label="Đóng">×</button></div><div id="detailBody" class="drawer-body"><div class="empty-state"><div class="empty-symbol">⌖</div><p>Nhấp một công trình hoặc trạm quan trắc để xem thông tin, nguồn dữ liệu và chuỗi lịch sử.</p></div></div><div id="detailActions" class="drawer-actions" hidden><button id="copyDetailButton" type="button">Sao chép</button><button id="editDetailButton" type="button">Chỉnh sửa</button><button id="deleteDetailButton" class="danger-text" type="button">Xóa</button></div></aside>
+  </div>
+</div>
+
+<dialog id="facilityDialog"><form id="facilityForm" method="dialog"><div class="dialog-header"><div><div class="eyebrow">CẬP NHẬT HIỆN TRƯỜNG</div><h2 id="formTitle">Thêm công trình</h2></div><button type="button" class="icon-btn dialog-close" aria-label="Đóng">×</button></div><div class="form-grid"><label>Tên công trình*<input name="name" required maxlength="120"></label><label>Mã số<input name="code" maxlength="40"></label><label>Loại công trình*<select name="type" required><option>Cống cố định</option><option>Cống tạm</option><option>Trạm bơm</option><option>Đập</option><option>Kênh</option><option>Điểm sạt lở</option></select></label><label>Địa bàn<select name="district"></select></label><label>Trạng thái<select name="status"><option>Đang vận hành</option><option>Theo dõi</option><option>Bảo trì</option></select></label><label>Năm xây dựng<input name="yearBuilt" type="number" min="1900" max="2100"></label><label>Kinh độ WGS84*<input name="lon" type="number" step="any" required></label><label>Vĩ độ WGS84*<input name="lat" type="number" step="any" required></label><label>Chiều rộng cửa cống (m)<input name="gateWidth" type="number" step="0.01" min="0"></label><label>Số lượng cửa cống<input name="gateCount" type="number" step="1" min="0"></label><label class="span-2">Ghi chú<textarea name="note" rows="3"></textarea></label></div><div class="coordinate-actions"><button type="button" id="pickOnMapButton">Chọn trên bản đồ</button><button type="button" id="formLocateButton">Lấy vị trí thiết bị</button></div><div class="dialog-footer"><button type="button" class="dialog-close">Hủy</button><button class="primary" value="save">Lưu thông tin</button></div></form></dialog>
+
+<dialog id="aboutDialog"><div class="dialog-header"><div><div class="eyebrow">NGUỒN & KIẾN TRÚC</div><h2>WebGIS Hệ thống Thủy lợi Bến Tre</h2></div><button type="button" class="icon-btn dialog-close" aria-label="Đóng">×</button></div><div class="about-content"><p><b>Mục tiêu:</b> phục dựng lớp trình bày WebGIS theo chức năng của đề tài “Xây dựng ứng dụng hỗ trợ quản lý và khai thác công trình thủy lợi tỉnh Bến Tre ứng phó với biến đổi khí hậu”.</p><div class="about-grid"><section><h3>Đã tích hợp</h3><p>Tra cứu công trình, trạm thủy văn, biểu đồ chuỗi mặn, thay đổi theo năm, IDW minh họa, lọc/tìm kiếm, đo đạc, nhập/xuất GeoJSON/CSV và thu thập điểm cục bộ.</p></section><section><h3>Giới hạn dữ liệu</h3><p>Báo cáo cung cấp thống kê và chuỗi số liệu nhưng không chứa toàn bộ dump PostGIS/GeoServer. Vì vậy các điểm công trình và ranh giới đang dùng là dữ liệu minh họa phục dựng, luôn được ghi nhãn.</p></section></div><div class="architecture-flow"><span>Trình duyệt / Leaflet</span><b>→</b><span>API + GeoServer</span><b>→</b><span>PostgreSQL/PostGIS + GeoTIFF</span></div><p class="muted-text">Bản GitHub Pages chạy an toàn ở chế độ tĩnh; không gọi API PHP cũ và không chứa tài khoản/mật khẩu.</p></div><div class="dialog-footer"><button type="button" class="primary dialog-close">Đóng</button></div></dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/config.js"></script><script src="assets/js/data.js"></script><script src="assets/js/app.js"></script>
+<script>if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){navigator.serviceWorker.register("./service-worker.js").catch(()=>{});}</script>
+</body>
+</html>

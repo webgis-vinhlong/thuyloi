@@ -1,0 +1,10 @@
+{
+  "name": "WebGIS Hệ thống Thủy lợi Bến Tre",
+  "short_name": "Thủy lợi Bến Tre",
+  "lang": "vi",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#eef3f7",
+  "theme_color": "#0f3d68",
+  "description": "WebGIS công trình thủy lợi, thủy văn và xâm nhập mặn Bến Tre."
+}
