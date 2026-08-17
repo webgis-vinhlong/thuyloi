@@ -1,0 +1,88 @@
+name: Validate WebGIS V4
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'service-worker-v4.js'
+      - 'manifest.webmanifest'
+      - '.github/workflows/validate-v4.yml'
+  push:
+    branches:
+      - v4-vinhlong-bentre-integration
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/app-v4.js
+          node --check assets/js/layer-catalog.js
+          node --check assets/js/data.js
+          node --check service-worker-v4.js
+      - name: Verify snapshot catalog contract
+        run: |
+          node <<'NODE'
+          global.window = {};
+          require('./assets/js/layer-catalog.js');
+          const C = window.TL_LAYER_CATALOG;
+          const expected = [
+            [260,'Trạm khí tượng thủy văn',24],
+            [248,'Hệ thống trạm bơm',3],
+            [252,'Đập',3],
+            [261,'Cống các loại',53],
+            [245,'Trạm cấp nước tư nhân',11],
+            [249,'Kênh',59],
+            [250,'Kè',10],
+            [251,'Đê',121],
+            [247,'Vị trí sạt lở',37]
+          ];
+          if (C.version !== '4.0.0') throw new Error('Catalog version must be 4.0.0');
+          if (C.totalFeatures !== 321) throw new Error('totalFeatures must be 321');
+          if (C.layers.length !== 9) throw new Error('Expected 9 official layers');
+          if (C.layers.reduce((s,l)=>s+l.count,0) !== 321) throw new Error('Layer counts must sum to 321');
+          for (const [id,name,count] of expected) {
+            const layer=C.layers.find(x=>x.id===id);
+            if (!layer || layer.name!==name || layer.count!==count) throw new Error(`Mismatch layer ${id}`);
+          }
+          console.log('Snapshot catalog OK');
+          NODE
+      - name: Verify Bến Tre research inventory contract
+        run: |
+          node <<'NODE'
+          global.window = {};
+          require('./assets/js/data.js');
+          const B = window.TLBT_DATA;
+          const expected = new Map([
+            ['Cống cố định',148],['Trạm bơm',2],['Kênh cấp 1',65],['Kênh cấp 2, 3',1452],
+            ['Đê bao',196],['Đập',14],['Cống tạm',1878],['Trạm đo thủy văn',31],
+            ['Mực nước đỉnh triều/ngày',4605],['Độ mặn cao nhất/tháng',987],['Độ mặn cao nhất/ngày',5992]
+          ]);
+          for (const [name,count] of expected) {
+            const row=B.inventory.find(x=>x[0]===name);
+            if (!row || row[2]!==count) throw new Error(`Mismatch research inventory: ${name}`);
+          }
+          if (B.stations.length!==10) throw new Error('Expected 10 Bến Tre research stations');
+          if (B.facilities.length!==30) throw new Error('Expected 30 reconstructed Bến Tre facility points');
+          if (B.years[0]!==1997 || B.years.at(-1)!==2016) throw new Error('Expected salinity years 1997–2016');
+          console.log('Bến Tre research inventory OK');
+          NODE
+      - name: Verify page wiring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          required=['WebGIS Thủy lợi Vĩnh Long','app-v4.css','layer-catalog.js','data.js','app-v4.js','service-worker-v4.js']
+          missing=[x for x in required if x not in html]
+          if missing: raise SystemExit('Missing from index.html: '+', '.join(missing))
+          print('Page wiring OK')
+          PY
