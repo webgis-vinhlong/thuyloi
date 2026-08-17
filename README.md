@@ -1,94 +1,131 @@
-# WebGIS Hệ thống Thủy lợi Bến Tre
+# 🌊 WebGIS Hệ thống Thủy lợi Bến Tre
 
-Bản phục dựng WebGIS quản lý và khai thác công trình thủy lợi tỉnh Bến Tre, được tổ chức lại từ ba nguồn:
+WebGIS chuyên đề phục vụ tra cứu, trực quan hóa và truy vấn dữ liệu công trình thủy lợi trên nền bản đồ Web. Phiên bản **v3.0.0** tiếp tục kế thừa bản phục dựng từ nghiên cứu WebGIS thủy lợi Bến Tre, đồng thời tích hợp bộ lớp `thuy_loi` đã bốc tách từ kho dữ liệu [`webgis-vinhlong/layer`](https://github.com/webgis-vinhlong/layer), nguồn gốc từ Cơ sở dữ liệu ngành Nông nghiệp và Môi trường – lĩnh vực Thủy lợi của tỉnh Vĩnh Long.
 
-1. mã phục dựng/dở dang do tác giả cung cấp;
-2. giao diện WebGIS gốc tại `webgis-vinhlong/webgis-vinhlong.github.io` (tham khảo cấu trúc UI/UX);
-3. báo cáo nghiên cứu **“Xây dựng ứng dụng hỗ trợ quản lý và khai thác công trình thủy lợi tỉnh Bến Tre ứng phó với biến đổi khí hậu”** (2020).
+> Trang WebGIS: `https://webgis-vinhlong.github.io/thuyloi/`
 
-## Mục tiêu của bản này
+## ✨ WebGIS v3.0.0
 
-- Chạy trực tiếp trên GitHub Pages, không cần backend để xem dữ liệu nghiên cứu đã đóng gói.
-- Giữ đúng tinh thần kiến trúc 3 tầng của nghiên cứu: **Presentation → Logic/Services → Data**.
-- Không giả mạo backend cũ: API PHP được phục hồi từ bundle nhưng không được gọi trong bản public.
-- Phân biệt rõ **số liệu nghiên cứu** và **hình học/điểm mẫu phục dựng**.
-- Chuẩn bị sẵn đường nâng cấp tới GeoServer + PostgreSQL/PostGIS khi có dữ liệu gốc.
+Bản v3 chuyển trọng tâm từ dữ liệu minh họa sang **321 đối tượng thuộc 9 lớp nghiệp vụ thực tế**:
 
-## Chức năng
+| Lớp | Layer ID | Hình học | Số đối tượng |
+|---|---:|---|---:|
+| 🌦️ Trạm khí tượng thủy văn | 260 | Point | **24** |
+| ⚙️ Hệ thống trạm bơm | 248 | Point | **3** |
+| 🧱 Đập | 252 | Point | **3** |
+| 🚪 Cống các loại | 261 | Point | **53** |
+| 💧 Trạm cấp nước tư nhân | 245 | Point | **11** |
+| 🌊 Kênh | 249 | LineString | **59** |
+| 🛡️ Kè | 250 | LineString | **10** |
+| 🏞️ Đê | 251 | LineString | **121** |
+| ⚠️ Vị trí sạt lở | 247 | LineString | **37** |
+| | | **Tổng** | **321** |
 
-- Bản đồ Leaflet responsive cho desktop/mobile (Leaflet 1.9.4 qua jsDelivr trên bản GitHub Pages).
-- Nền trắng, OpenStreetMap và ảnh vệ tinh Esri.
-- Lớp công trình, trạm thủy văn, ranh huyện phục dựng và bề mặt IDW minh họa.
-- Tìm kiếm không dấu theo tên, mã, loại, địa bàn và trạng thái.
-- Chuỗi mặn cực đại 10 trạm giai đoạn 1997–2016; biểu đồ theo trạm và năm.
-- Chỉ báo nhanh số trạm có dữ liệu, số trạm ≥ 4 g/L và giá trị lớn nhất theo năm.
-- Thống kê khối lượng CSDL theo Bảng 2 của báo cáo.
-- Đo khoảng cách, GPS, thêm/sửa/xóa điểm cục bộ.
-- Nhập GeoJSON/CSV; xuất GeoJSON/CSV; sao lưu `localStorage`.
+## 🔎 Chức năng chính
 
-## Chạy
+- Hiển thị đầy đủ 9 lớp Thủy lợi với **màu và SVG ký hiệu riêng** cho từng nhóm.
+- Bật/tắt từng lớp hoặc toàn bộ lớp từ sidebar.
+- Nền OpenStreetMap, Esri World Imagery và CARTO Light.
+- **Truy vấn không dấu** trên tên công trình và toàn bộ trường thuộc tính công khai.
+- Lọc kết quả theo lớp; chọn kết quả để zoom tới điểm/tuyến.
+- Popup kiểu nghiệp vụ: tên đối tượng, nhóm lớp và **toàn bộ thuộc tính nguồn**.
+- Drawer chi tiết chứa nguồn, Layer ID, FID, thuộc tính, loại hình học, tọa độ và chiều dài hình học tính từ geometry.
+- Giá trị `null` hoặc chuỗi rỗng được ghi rõ **“Chưa cập nhật”**, không tự suy diễn dữ liệu.
+- Tooltip tên đối tượng khi rê chuột trên điểm hoặc tuyến.
+- GPS, toàn màn hình, sao chép tọa độ và đo khoảng cách nhiều điểm.
+- Responsive cho desktop, tablet và mobile.
+- PWA/service worker v3 có runtime cache cho tài nguyên bản đồ và snapshot GeoJSON.
 
-Có thể mở `index.html` trực tiếp. Để kiểm thử gần với GitHub Pages:
+## 🗃️ Nguồn dữ liệu
+
+Nguồn dữ liệu nghiệp vụ:
+
+- Portal: `https://hatang.vinhlong.gov.vn/map-thuy-loi`
+- Kho bốc tách: `https://github.com/webgis-vinhlong/layer`
+- Nhóm dữ liệu: `thuy_loi`
+- CRS: `EPSG:4326`
+- Snapshot nguồn được ghim ở commit:
+
+```text
+a93ebf004b04f79d90a199d22a139dab7479895c
+```
+
+WebGIS tải các GeoJSON qua jsDelivr **theo đúng commit** này, thay vì tải theo nhánh `main`, nhằm tránh thay đổi dữ liệu ngầm khi kho nguồn tiếp tục cập nhật.
+
+Chi tiết mapping lớp và nguyên tắc dữ liệu: [`docs/OFFICIAL-LAYERS.md`](docs/OFFICIAL-LAYERS.md).
+
+## 🧾 Ví dụ thuộc tính
+
+Các schema được giữ nguyên theo từng lớp. Ví dụ:
+
+- **Trạm khí tượng thủy văn:** Tên trạm, Loại trạm, Vị trí Km, Vận hành, Năm xây dựng, Ghi chú.
+- **Trạm bơm:** Tên trạm, Vị trí, Số máy bơm, Công suất thiết kế/thực tế, Diện tích phục vụ, hiện trạng.
+- **Cống:** Tên cống, Địa chỉ, Chiều dài, Chiều rộng dẫn nước, Kết cấu, Diện tích phục vụ, cao độ, năm xây dựng, tình trạng.
+- **Kênh/Kè/Đê:** tên tuyến, địa chỉ, chiều dài, chiều rộng/kết cấu/phân cấp, năm xây dựng, tình trạng, ghi chú.
+- **Sạt lở:** địa danh, tuyến sông/rạch, kích thước, diện tích, năm sạt lở, mức độ, điểm đầu/điểm cuối và ghi chú.
+
+Popup không cố định một schema chung mà sinh bảng thuộc tính theo chính dữ liệu của từng feature, vì vậy các trường của nguồn không bị mất khi hiển thị.
+
+## 🏗️ Kiến trúc
+
+```text
+GitHub Pages / Browser
+        │
+        ├── Leaflet 1.9.4
+        ├── app-v3.js
+        ├── layer-catalog.js
+        │
+        ├── OSM / Esri / CARTO basemap
+        │
+        └── jsDelivr CDN
+              │
+              └── webgis-vinhlong/layer@<pinned-commit>/data/geojson/*.geojson
+```
+
+Kiến trúc sản xuất dài hạn vẫn có thể nâng cấp sang:
+
+```text
+Leaflet / Browser → HTTPS API + GeoServer → PostgreSQL/PostGIS + GeoTIFF
+```
+
+## 📁 Cấu trúc liên quan v3
+
+```text
+thuyloi/
+├── index.html
+├── assets/
+│   ├── css/
+│   │   └── app-v3.css
+│   └── js/
+│       ├── layer-catalog.js
+│       └── app-v3.js
+├── docs/
+│   └── OFFICIAL-LAYERS.md
+├── service-worker-v3.js
+└── manifest.webmanifest
+```
+
+Các file phục dựng v2 vẫn được giữ lại trong repository để bảo toàn lịch sử phát triển và dữ liệu nghiên cứu cũ, nhưng trang chính v3 không còn phụ thuộc vào các điểm công trình minh họa đó.
+
+## ▶️ Chạy cục bộ
+
+Không mở trực tiếp bằng `file://` nếu muốn kiểm thử đầy đủ fetch/PWA. Chạy một HTTP server:
 
 ```bash
 python -m http.server 8080
 ```
 
-Sau đó mở `http://localhost:8080`.
-
-## Dữ liệu và độ tin cậy
-
-### Dữ liệu nghiên cứu
-
-- Chuỗi độ mặn cực đại 10 trạm, 1997–2016: Bảng 1 của báo cáo.
-- Khối lượng các nhóm dữ liệu: Bảng 2 của báo cáo, gồm 148 cống cố định, 1.878 cống tạm, 31 trạm thủy văn, 4.605 bản ghi mực nước đỉnh triều/ngày, 987 bản ghi mặn cao nhất/tháng, 5.992 bản ghi mặn cao nhất/ngày và các lớp nền liên quan.
-
-### Dữ liệu phục dựng
-
-Toàn bộ tọa độ trạm trong bản trình diễn, ranh 9 huyện/thành phố và 30 điểm công trình là **dữ liệu đại diện để phục dựng giao diện**. Chúng không phải dump PostgreSQL/PostGIS của đề tài và không được dùng cho vận hành công trình.
-
-## Kiến trúc production đề xuất
+Sau đó mở:
 
 ```text
-Browser / Leaflet
-       │ HTTP(S), JSON, OGC WMS/WFS/WCS
-       ▼
-API service + GeoServer
-       │ SQL / PostGIS
-       ▼
-PostgreSQL/PostGIS + GeoTIFF + file attachments
+http://localhost:8080/
 ```
 
-Bản GitHub Pages hiện tại tương ứng với **tầng trình bày** và một snapshot dữ liệu nghiên cứu. Xem `docs/ARCHITECTURE.md` và `docs/DATA-SOURCES.md`.
+## ⚖️ Lưu ý sử dụng dữ liệu
 
-## Cấu hình backend mới
+WebGIS này là lớp khai thác/trực quan hóa từ snapshot dữ liệu công khai. Dữ liệu trống không được tự bổ sung; việc xác nhận pháp lý, hiện trạng công trình, thiết kế kỹ thuật hoặc điều hành thủy lợi phải đối chiếu với cơ quan quản lý và hệ thống nguồn.
 
-`assets/js/config.js` mặc định:
+## 👤 Phát triển
 
-```js
-window.TLBT_CONFIG = {
-  mode: "static-research",
-  backend: { enabled: false, apiBase: "", geoserverWms: "", geoserverWfs: "", workspace: "" }
-};
-```
-
-Chỉ bật backend sau khi có dịch vụ HTTPS mới, CORS phù hợp, xác thực/token, RBAC và log thay đổi.
-
-## Cấu trúc
-
-```text
-index.html
-assets/
-  css/app.css
-  js/app.js
-  js/config.js
-  js/data.js
-docs/
-  ARCHITECTURE.md
-  DATA-SOURCES.md
-NOTICE.md
-```
-
-## Lưu ý
-
-Bản phục dựng này là lớp khai thác/giới thiệu dữ liệu nghiên cứu. Nó không tuyên bố khôi phục toàn bộ CSDL, ảnh/tài liệu kỹ thuật, cấu hình GeoServer hay PHP server-side của hệ thống gốc.
+**Long Ngo / webgis-vinhlong**  
+Mã nguồn mở phục vụ nghiên cứu, WebGIS và dữ liệu không gian.
