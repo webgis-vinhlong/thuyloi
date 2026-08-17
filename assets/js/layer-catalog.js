@@ -1,9 +1,12 @@
 window.TL_LAYER_CATALOG = {
-  version: "3.0.0",
+  version: "4.0.0",
+  project: "WebGIS Thủy lợi Vĩnh Long",
+  datasetLabel: "Snapshot hạ tầng · thuy_loi",
   sourceRepo: "webgis-vinhlong/layer",
   sourceCommit: "a93ebf004b04f79d90a199d22a139dab7479895c",
   sourcePortal: "https://hatang.vinhlong.gov.vn/map-thuy-loi",
   totalFeatures: 321,
+  coordinateSystem: "EPSG:4326",
   layers: [
     {id:260,key:"kttv",name:"Trạm khí tượng thủy văn",count:24,geometry:"Point",color:"#0b74b5",icon:"kttv",file:"260.geojson"},
     {id:248,key:"tram-bom",name:"Hệ thống trạm bơm",count:3,geometry:"Point",color:"#5b5bd6",icon:"pump",file:"248.geojson"},
