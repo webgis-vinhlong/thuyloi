@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b4f6c">
-  <meta name="description" content="WebGIS Hệ thống Thủy lợi Bến Tre — khai thác 9 lớp dữ liệu thủy lợi từ kho dữ liệu hạ tầng Vĩnh Long, 321 đối tượng, truy vấn thuộc tính và popup chi tiết.">
-  <title>WebGIS Hệ thống Thủy lợi Bến Tre</title>
+  <meta name="description" content="WebGIS Hệ thống Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long — khai thác 9 lớp dữ liệu thủy lợi từ kho dữ liệu hạ tầng Vĩnh Long, 321 đối tượng, truy vấn thuộc tính và popup chi tiết.">
+  <title>WebGIS Hệ thống Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
@@ -18,7 +18,7 @@
     <button id="menuButton" class="icon-btn mobile-only" type="button" aria-label="Mở danh mục">☰</button>
     <div class="brand">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 30c7-8 13-11 19-8 5 2 8 2 15-3v12c-7 5-12 5-17 2-6-3-10-1-17 6V30Z" fill="currentColor"/><path d="M13 10h22v9H13zM18 6h12v4H18z" fill="currentColor" opacity=".85"/></svg></span>
-      <div class="brand-copy"><strong>WEBGIS THỦY LỢI BẾN TRE</strong><span>321 đối tượng · 9 lớp nghiệp vụ · truy vấn thuộc tính</span></div>
+      <div class="brand-copy"><strong>WEBGIS THỦY LỢI khu vực Trà Vinh, tỉnh Vĩnh Long</strong><span>321 đối tượng · 9 lớp nghiệp vụ · truy vấn thuộc tính</span></div>
     </div>
     <label class="global-search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" autocomplete="off" placeholder="Tìm tên công trình, địa chỉ, xã/phường, năm, hiện trạng…"><button id="clearSearch" type="button" aria-label="Xóa tìm kiếm">×</button></label>
     <div class="top-actions"><span id="dataStatus" class="status-pill loading">ĐANG NẠP</span><button id="locateButton" class="top-btn" type="button">⌖ <span>Vị trí</span></button><button id="fullscreenButton" class="top-btn desktop-only" type="button">⛶ <span>Toàn màn hình</span></button><button id="aboutButtonTop" class="top-btn" type="button">ⓘ <span>Nguồn</span></button></div>
@@ -75,12 +75,12 @@
 </div>
 
 <dialog id="aboutDialog">
-  <div class="dialog-header"><div><div class="eyebrow">NGUỒN DỮ LIỆU & PHIÊN BẢN</div><h2>WebGIS Hệ thống Thủy lợi Bến Tre</h2></div><button class="icon-btn dialog-close" type="button">×</button></div>
+  <div class="dialog-header"><div><div class="eyebrow">NGUỒN DỮ LIỆU & PHIÊN BẢN</div><h2>WebGIS Hệ thống Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long</h2></div><button class="icon-btn dialog-close" type="button">×</button></div>
   <div class="about-content">
     <p>Phiên bản này khai thác trực tiếp 9 lớp Thủy lợi đã bốc tách trong kho <b>webgis-vinhlong/layer</b>, nguồn gốc từ cổng Cơ sở dữ liệu ngành Nông nghiệp và Môi trường – lĩnh vực Thủy lợi.</p>
     <div id="aboutDataset" class="about-grid"></div>
     <p><b>Snapshot nguồn:</b> <code>a93ebf004b04f79d90a199d22a139dab7479895c</code>. Dữ liệu được nạp từ jsDelivr CDN theo đúng commit này để tránh thay đổi ngầm khi nhánh nguồn cập nhật.</p>
-    <p><b>Lưu ý phạm vi:</b> tên dự án giữ theo WebGIS Thủy lợi Bến Tre hiện hữu; bộ 321 đối tượng ở phiên bản này phản ánh chính xác lớp <em>thuy_loi</em> của kho dữ liệu hạ tầng Vĩnh Long tại snapshot nêu trên.</p>
+    <p><b>Lưu ý phạm vi:</b> tên dự án giữ theo WebGIS Thủy lợi khu vực Trà Vinh, tỉnh Vĩnh Long hiện hữu; bộ 321 đối tượng ở phiên bản này phản ánh chính xác lớp <em>thuy_loi</em> của kho dữ liệu hạ tầng Vĩnh Long tại snapshot nêu trên.</p>
   </div>
 </dialog>
 
