@@ -1,9 +1,16 @@
-const CACHE="tlbt-webgis-v2";
-const CORE=["./","./index.html","./assets/css/app.css","./assets/js/config.js","./assets/js/data.js","./assets/js/app.js","./manifest.webmanifest"];
-self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
-self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener("fetch",e=>{
-  const u=new URL(e.request.url);
-  if(u.origin!==location.origin)return;
-  e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match("./index.html"))));
+self.addEventListener("install",event=>event.waitUntil(self.skipWaiting()));
+self.addEventListener("activate",event=>event.waitUntil((async()=>{
+  const keys=await caches.keys();
+  await Promise.all(keys.filter(key=>key.startsWith("tlbt-webgis-")||key.startsWith("thuyloi-vinhlong-")).map(key=>caches.delete(key)));
+  await self.clients.claim();
+})()));
+self.addEventListener("fetch",event=>{
+  if(event.request.method!=="GET")return;
+  const url=new URL(event.request.url);
+  if(url.origin!==location.origin)return;
+  if(event.request.mode==="navigate"){
+    event.respondWith(fetch(event.request,{cache:"no-store"}).catch(()=>caches.match("./index.html")));
+    return;
+  }
+  event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));
 });
